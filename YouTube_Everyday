@@ -1,0 +1,35 @@
+//You should enable YouTube Data API v3 service in google app script IDE.
+/**
+ * Searches for videos about world news, then logs the video IDs and title.
+ * Note that this sample limits the results to 25. To return more
+ * results, pass additional parameters as shown in the YouTube Data API docs.
+ * @see https://developers.google.com/youtube/v3/docs/search/list
+ */
+function searchByKeyword() {
+  var results = YouTube.Search.list('id,snippet', {
+    //You can customize the keywords.
+    q: 'world news',
+    maxResults: 5
+  });
+
+  results.items.forEach(function(item) {
+    Logger.log('[%s] Title: %s', item.id.videoId, item.snippet.title,);
+    //Let me know via email.
+    const email = "your email address";
+    const subject = "Title of your email.";
+    var mailcontent = (item.snippet.title +　"\n" + "https://www.youtube.com/watch?v="+item.id.videoId);
+    GmailApp.sendEmail(email,subject,mailcontent);
+    const text = mailcontent;
+  //(Optional)Store news to the sheet every day.
+  //I created this document to create logs of top news.
+  const doc = DocumentApp.openById("Your selected Google Document ID");
+  const body = doc.getBody();
+  //Select paragraph.
+  var date = new Date();
+  const paragraph1 = String(date); 
+  const paragraph = body.appendParagraph(paragraph1);
+  //Select overdue tasks as mailcontent as a text.
+  paragraph.appendText(text);
+  });
+  
+}
